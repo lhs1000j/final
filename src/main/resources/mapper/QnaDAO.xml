@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace에는 DAO가 있는 위치를 지정한다. -->
+<mapper namespace="com.project.greenbook.dao.QnaDao">
+    <!-- id에는 메서드 명을 넣는다. -->
+    <select id="list" resultType="com.project.greenbook.dto.QnaDto">
+        SELECT qna_id, qna_name, qna_title, qna_content, qna_date, qna_hit  FROM QNA_BOARD
+    </select>
+
+    <!--댓글-->
+    <update id="reply" parameterType="hashmap">
+        update QNA_BOARD set qna_step = qna_step +1 where qna_ref=? and qna_step
+    </update>
+
+    <insert id="write" parameterType="hashmap">
+        INSERT INTO QNA_BOARD(qna_name, qna_title, qna_content, qna_hit)
+        VALUES (#{qna_title},#{qna_name},#{qna_content},0)
+    </insert>
+
+    <select id="contentView" parameterType="hashmap" resultType="com.project.greenbook.dto.QnaDto">
+        SELECT qna_id, qna_name, qna_title, qna_content, qna_date, qna_hit FROM QNA_BOARD WHERE qna_id =#{qna_id}
+    </select>
+
+    <select id="modifyView" parameterType="hashmap" resultType="com.project.greenbook.dto.QnaDto">
+        SELECT qna_id, qna_name, qna_title, qna_content, qna_date, qna_hit FROM QNA_BOARD WHERE qna_id =#{qna_id}
+    </select>
+
+    <select id="replyView" parameterType="hashmap" resultType="com.project.greenbook.dto.QnaDto">
+        SELECT qna_id, qna_name, qna_title, qna_content, qna_date, qna_hit FROM QNA_BOARD WHERE qna_id =#{qna_id}
+    </select>
+
+    <update id="modify" parameterType="hashmap">
+        UPDATE QNA_BOARD SET qna_id = #{qna_id}, qna_title = #{qna_title}, qna_content = #{qna_content}
+        WHERE qna_id = #{qna_id}
+    </update>
+
+    <delete id="delete" parameterType="hashmap">
+        DELETE FROM QNA_BOARD WHERE qna_id = #{qna_id}
+    </delete>
+
+    <update id="upHit" parameterType="hashmap">
+        update QNA_BOARD set qna_hit = qna_hit + 1 where qna_id=#{qna_id}
+    </update>
+
+    <select id="countQna" parameterType="hashMap" resultType="int">
+        SELECT COUNT(qna_id) FROM QNA_BOARD
+        WHERE ${searchOption}
+        like '%${searchText}%'
+
+    </select>
+    <select id="qnaList"  parameterType="hashMap" resultType="com.project.greenbook.dto.QnaDto">
+        SELECT qna_id, qna_name, qna_title, qna_content, qna_date, qna_hit  FROM QNA_BOARD
+        WHERE ${searchOption}
+        like '%${searchText}%'
+        ORDER BY qna_id desc
+        limit ${startPage},5
+    </select>
+
+</mapper>

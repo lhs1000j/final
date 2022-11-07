@@ -1,0 +1,310 @@
+/* All */
+@font-face {
+    font-family: 'GmarketSansMedium';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
+* {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: 'GmarketSansMedium';
+}
+body{
+    max-width: 1200px;
+    margin: 0 auto;
+}
+a {
+    color: #000;
+    text-decoration: none;
+}
+a:hover,a:focus {
+    color : #2aab1d;
+}
+/* Top Banner 부분 */
+.topBanner {
+    background: #2aab1d;
+}
+.topBanner .bannerContent {
+    padding: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+.topBanner .bannerText {
+    flex-grow: 1;
+    text-align: center;
+    width: 30px;
+}
+.topBanner .bannerClose {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.topBanner .bannerClose > span > img {
+    width: 30px;
+    height: 30px;
+    margin: 0;
+}
+
+/* 헤더 */
+header ul.nav {
+    font-size: 16px;
+}
+header ul.nav a{
+    color : #000;
+}
+header ul.nav a:hover,
+header ul.nav a:focus {
+    color : #2aab1d;
+}
+header .logo {
+    display: flex;
+    justify-content: center;
+    height: 80px;
+    margin: 20px 0;
+}
+header .logo h1 {
+    line-height: 80px;
+    margin-bottom: 0;
+}
+header img {
+    width: 70px;
+    height: 80px;
+    margin-right: 20px;
+}
+header .nav-tabs {
+    display: flex;
+    font-size: 8px;
+    justify-content: space-between;
+}
+/* 메인페이지 카테고리별 책 소개 부분 */
+#mainWrapper .container{
+    width: 1200px;
+    margin: 0 auto 50px;
+    text-align: center;
+    padding: 0;
+}
+#mainWrapper ul.tabs{
+    width: 1200px;
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    display: flex;
+}
+#mainWrapper ul.tabs li{
+    background: none;
+    color: #222;
+    display: inline-block;
+    padding: 10px 0px;
+    cursor: pointer;
+    width: 20%;
+}
+#mainWrapper ul.tabs li.current{
+    background-color: #2aab1d;
+}
+#mainWrapper ul.tabs li.current a {
+    display : block;
+}
+#mainWrapper ul.tabs li.current a:hover,
+#mainWrapper ul.tabs li.current a:focus{
+    color: #fff;
+}
+#mainWrapper .tab-content{
+    width: 1200px;
+    display: none;
+    padding: 15px;
+    border: 2px solid #2aab1d;
+    box-sizing: border-box;
+    text-align: center;
+}
+#mainWrapper .tab-content.current{
+    display: inherit;
+}
+
+#mainWrapper .tab-content .mainView{
+    display: flex;
+    justify-content: space-around;
+    padding-left: 0;
+}
+
+#mainWrapper .tab-content .mainView li {
+    margin-right : 15px;
+}
+
+#mainWrapper .tab-content .mainView li:last-of-type {
+    margin-right : 0;
+}
+
+#mainWrapper .tab-content a img {
+    width: 250px;
+    height: 350px;
+    padding: 20px;
+}
+#mainWrapper .tab-content a p {
+    margin-bottom: 2px;
+    font-size: 18px;
+}
+#mainWrapper .tab-content a span {
+    font-size: 14px;
+}
+/* 오늘의 책, 베스트셀러 부분 */
+#mainContent {
+    height: 900px;
+}
+#mainContent > div > span {
+    display: inline-block;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+#mainContent .todayBook {
+    width: 1200px;
+    height: 400px;
+    position: relative;
+}
+#mainContent .todayBook > span {
+    display: inline-block;
+    height: 30px;
+}
+#mainContent .todayBook img {
+    width: 200px;
+}
+#mainContent .todayBook > div {
+    width: 600px;
+}
+#mainContent .todayBook .todayFirst {
+    position: absolute;
+    top : 45px;
+    left : 0px;
+}
+#mainContent .todayBook div div {
+    position: absolute;
+    top : 0px;
+    left : 220px;
+    width: 380px;
+}
+#mainContent .todayBook .todaySecond {
+    position: absolute;
+    top : 30px;
+    left : 600px;
+}
+#mainContent .bestSeller img {
+    width: 300px;
+    height: 330px;
+    margin-bottom: 15px;
+}
+#mainContent .bestSeller .description {
+    width : 300px;     /* 너비는 변경될수 있습니다. */
+    text-overflow: ellipsis;  /* 위에 설정한 100px 보다 길면 말줄임표처럼 표시합니다. */
+    white-space  : nowrap;    /* 줄바꿈을 하지 않습니다. */
+    overflow     : hidden;    /* 내용이 길면 감춤니다 */
+    display      : block;     /* ie6이상 현재요소를 블럭처리합니다. */
+}
+/* 광고 배너 부분 */
+#banner {
+    width: 1200px;
+    text-align: center;
+    margin-bottom: 50px;
+}
+#banner img {
+    width: 100%;
+}
+.chatting {
+    position: absolute;
+    top: 220px;
+    right: 230px;
+    text-align: center;
+}
+.chatting img {
+    width: 50px;
+    cursor: pointer;
+}
+.chatting span {
+    cursor: pointer;
+}
+    /* 푸터 */
+footer ul.menu1 {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
+    padding-left: 0;
+}
+
+footer ul.menu1 li {
+    width: 25%;
+    font-size: 16px;
+}
+footer ul.menu1 li .title span {
+    color: #000;
+}
+footer ul.menu1 li ul {
+    padding: 0;
+}
+footer ul.menu1 li ul.menuList {
+    width: 250px;
+    display: flex;
+    justify-content: space-around;
+}
+footer ul.menu1 li ul.menuList li {
+    text-align: center;
+    margin: 0 10px;
+}
+footer ul.menu1 li ul.menuList li p {
+    font-size: 12px;
+}
+footer ul.menu1 li ul li{
+    width: 100%;
+    font-size: 14px;
+}
+footer ul.menu1 li ul li.compay_phone img{
+    width: 16px;
+}
+footer ul.sns {
+    width: 150px;
+    display: flex;
+    justify-content: center;
+}
+footer ul.sns li img{
+    width: 30px;
+}
+
+footer h4.title {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+footer li.compay_phone {
+    font-size: 45px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+footer a.btn_resp {
+    border: 1px solid silver;
+    padding: 3px;
+}
+
+footer ul.menu2 {
+    width: 1160px;
+    padding-left: 0;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+footer ul.menu2 li {
+    margin-bottom: 3px;
+}
+
+footer span.pcolor {
+    font-weight: bold;
+}
+footer .margin_con .main_banner li img {
+    width: 30%;
+}
+footer p.copyright {
+    text-align: center;
+}

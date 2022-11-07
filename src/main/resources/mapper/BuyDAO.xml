@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace에는 DAO가 있는 위치를 지정한다. -->
+<mapper namespace="com.project.greenbook.dao.BuyDAO">
+
+    <select id="cart" resultType="com.project.greenbook.dto.BuyDTO">
+        SELECT * FROM cart WHERE id = #{member_id} ORDER BY book_id
+    </select>
+
+    <select id="cartCount" resultType="int">
+        SELECT count(*) FROM cart WHERE id = #{member_id}
+    </select>
+
+    <delete id="cancel">
+        DELETE FROM cart WHERE book_id=#{book_id}
+    </delete>
+
+    <insert id="cartAdd" parameterType="hashmap" >
+        INSERT INTO cart(book_id,book_price,book_title,book_author,book_publisher,book_description,book_count,id)
+        VALUES(#{book_id},#{book_price},#{book_title},#{book_author},#{book_publisher},#{book_description},1,#{member_id})
+    </insert>
+
+    <insert id="cartCountUpdate" parameterType="hashmap">
+        UPDATE cart SET book_count = #{count} WHERE book_id=#{book_id}
+    </insert>
+
+    <insert id="orderAdd" parameterType="hashmap" >
+        INSERT INTO book_order
+        (book_id,book_price,book_title,book_count,book_order_number
+        ,member_id,member_name,member_phone,member_email,member_postcode,member_address,member_detailAddress,member_extraAddress,order_date)
+        SELECT
+        book_id,book_price,book_title,book_count,FLOOR(((RAND()+0.1)*10)*((RAND()+0.1)*10))*book_price+book_id+book_count
+        ,#{member_id},#{member_name},#{member_phone},#{member_email},#{member_postcode},#{member_address},#{member_detailAddress},#{member_extraAddress}
+        ,NOW()
+        from cart WHERE id=#{member_id}
+    </insert>
+
+    <insert id="speedOrderAdd" parameterType="hashmap" >
+        INSERT INTO book_order
+        (book_id,book_price,book_title,book_count,book_order_number
+        ,member_id,member_name,member_phone,member_email,member_postcode,member_address,member_detailAddress,member_extraAddress,order_date)
+        value(
+        #{book_id},#{book_price},#{book_title},1,FLOOR(((RAND()+0.1)*10)*((RAND()+0.1)*10))*#{book_price}+#{book_id},#{member_id},#{member_name},#{member_phone},#{member_email},#{member_postcode},#{member_address},#{member_detailAddress},#{member_extraAddress}
+        ,NOW())
+    </insert>
+
+    <select id="orderList" resultType="com.project.greenbook.dto.OrderDTO">
+        SELECT * FROM book_order where
+        <choose>
+            <when test="order_date == null">
+                member_id=#{member_id}
+            </when>
+            <otherwise>
+                member_id=#{member_id} AND order_date=#{order_date}
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="orderOkList" resultType="com.project.greenbook.dto.OrderDTO">
+        SELECT * FROM book_order WHERE order_date = NOW()
+    </select>
+
+    <insert id="updateCount" parameterType="hashmap">
+            UPDATE book_info
+            SET book_stock = book_stock-#{book_count}
+            WHERE
+            book_id = #{book_id}
+    </insert>
+
+    <delete id="orderDelete">
+        DELETE FROM book_order WHERE book_order_number=#{book_order_number}
+    </delete>
+    <!-- 이미지 -->
+    <resultMap id="bookImgMap" type="com.project.greenbook.dto.BookImgDTO">
+        <result column="book_id" property="bookId"></result>
+        <result column="origin_file_name" property="originFileName"></result>
+        <result column="stored_file_name" property="storedFileName"></result>
+        <result column="stored_thumbnail" property="storedThumbnail"></result>
+        <result column="file_size" property="fileSize"></result>
+    </resultMap>
+
+    <select id="contentImg" parameterType="int" resultMap="bookImgMap">
+        SELECT book_id, origin_file_name, stored_file_name, stored_thumbnail, file_size
+        FROM book_img
+        WHERE book_id = #{bookId}
+    </select>
+
+    <select id="member" parameterType="String" resultType="com.project.greenbook.dto.MemberDTO">
+        SELECT *
+        FROM member
+        WHERE member_id = #{member_id}
+    </select>
+</mapper>

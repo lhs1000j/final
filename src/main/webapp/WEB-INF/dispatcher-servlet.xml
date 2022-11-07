@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:beans="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:websocket="http://www.springframework.org/schema/websocket"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/websocket
+		http://www.springframework.org/schema/websocket/spring-websocket.xsd">
+
+    <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+    <!-- Enables the Spring MVC @Controller programming model -->
+
+    <!-- Annotation 활성화 -->
+    <mvc:annotation-driven/>
+
+    <!-- Component Package 지정 -->
+    <context:component-scan base-package="com.project.greenbook"/>
+
+    <!-- 정적 리소스 경로 설정 -->
+    <mvc:resources mapping="/**" location="/resources/"/>
+
+    <!-- View Resolver 세팅 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+
+
+    <beans:bean name="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <!-- MySQL 버전에 따라 driverClassName의 value값이 달라짐 아래 코드는 Mysql 8기준 -->
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+        <property name="url"
+                  value="jdbc:mysql://localhost:3306/green?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=Asia/Seoul">
+        </property>
+        <property name="username" value="root"></property>
+        <property name="password" value="1234"></property>
+    </beans:bean>
+
+    <beans:bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <beans:property name="dataSource" ref="dataSource"></beans:property>
+        <beans:property name="mapperLocations" value="classpath:mapper/*.xml" />
+    </beans:bean>
+
+    <beans:bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <beans:constructor-arg index="0" ref="sqlSessionFactory"></beans:constructor-arg>
+    </beans:bean>
+
+    <websocket:handlers>
+        <websocket:mapping handler="chatHandler" path="/chat-ws"/>
+        <websocket:handshake-interceptors>
+            <bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor"/>
+        </websocket:handshake-interceptors>
+    </websocket:handlers>
+</beans>

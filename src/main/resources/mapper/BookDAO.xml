@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace에는 DAO가 있는 위치를 지정한다. -->
+<mapper namespace="com.project.greenbook.dao.BookDAO">
+
+    <select id="randomBookId" parameterType="int" resultType="String">
+        select A.book_id from
+        (select @rownum := @rownum+1 as no
+        , bo.*
+        from book_info bo
+        where (@rownum:=0)=0) A
+        where no = ${randomNum};
+    </select>
+
+    <select id="bookId1" resultType="String">
+        SELECT book_id FROM book_info WHERE large_category = '국내도서'
+        ORDER BY publication_date desc Limit 0, 4
+    </select>
+    <select id="bookId2" resultType="String">
+        SELECT book_id FROM book_info WHERE large_category = '외국도서'
+        ORDER BY publication_date desc Limit 0, 4
+    </select>
+    <select id="bookId3" resultType="String">
+        SELECT book_id FROM book_info WHERE large_category = 'eBook'
+        ORDER BY publication_date desc Limit 0, 4
+    </select>
+    <select id="bookId4" resultType="String">
+        SELECT book_id FROM book_info WHERE large_category = '웹소설/코믹'
+        ORDER BY publication_date desc Limit 0, 4
+    </select>
+    <select id="bookId5" resultType="String">
+        SELECT book_id FROM book_info WHERE large_category = '중고샵'
+        ORDER BY publication_date desc Limit 0, 4
+    </select>
+
+    <!-- if문을 이용해 세부 카테고리가 있을 때 없을 때 나눠야함 -->
+    <select id="bookCount" resultType="int">
+        SELECT count(*)
+        FROM book_info
+        <include refid="where" />
+        <if test="searchType != null">
+            <include refid="search" />
+        </if>
+        <if test="title != null">
+            <include refid="usedBook" />
+        </if>
+    </select>
+
+    <select id="bookIdList" resultType="String">
+        SELECT book_id FROM book_info
+        <include refid="where" />
+        <if test="searchType != null">
+            <include refid="search" />
+        </if>
+        <if test="title != null">
+            <include refid="usedBook" />
+        </if>
+        ORDER BY BOOK_ID
+        Limit ${displayPost},${postNum}
+    </select>
+
+    <select id="bookList" resultType="com.project.greenbook.dto.BookDTO">
+        SELECT book_id,book_title,large_category,small_category,book_price,book_author,book_publisher
+        ,publication_date,book_description,book_stock,new_book
+        FROM book_info
+        <include refid="where" />
+        <if test="searchType != null">
+            <include refid="search" />
+        </if>
+        <if test="title != null">
+            <include refid="usedBook" />
+        </if>
+        ORDER BY BOOK_ID
+        Limit ${displayPost},${postNum}
+    </select>
+    <select id="bestSeller" resultType="String">
+        SELECT book_id
+        FROM (select book_id, sum(book_count) as count
+                from book_order bo
+                group by book_id
+                order by count desc) bs
+        Limit 0, 10
+    </select>
+    <!-- sql code 조각 : 반복되는 sql의 일부를 따로 빼두고 사용 -->
+    <sql id="where">
+        <choose>
+            <when test="smallCategory != null and !smallCategory.equals('')">
+                WHERE large_category = #{largeCategory} AND small_category = #{smallCategory}
+            </when>
+            <otherwise>
+                WHERE large_category = #{largeCategory}
+            </otherwise>
+        </choose>
+    </sql>
+    <sql id="search">
+        <choose>
+            <!--전체 검색인 경우-->
+            <when test="searchType == 'all'">
+                AND (book_title like concat('%', #{searchName}, '%') OR book_author like concat('%', #{searchName}, '%')
+                OR book_publisher like concat('%', #{searchName}, '%') OR book_description like concat('%', #{searchName}, '%'))
+            </when>
+            <!--전체 검색이 아닌 경우-->
+            <otherwise>
+                AND ${searchType} like concat('%', #{searchName}, '%')
+            </otherwise>
+        </choose>
+    </sql>
+    <sql id="usedBook">
+        AND book_title = #{title} AND book_author = #{author}
+    </sql>
+
+    <!-- 테이블의 컬럼과 DTO의 변수가 이름이 다를 경우 둘을 이어준다. -->
+    <!-- Mapping Start -->
+    <resultMap id="bookInfoMap" type="com.project.greenbook.dto.BookInfoDTO">
+        <result column="book_id" property="bookId"></result>
+        <result column="book_title" property="bookTitle"></result>
+        <result column="large_category" property="largeCategory"></result>
+        <result column="small_category" property="smallCategory"></result>
+        <result column="book_price" property="bookPrice"></result>
+        <result column="book_author" property="bookAuthor"></result>
+        <result column="book_publisher" property="bookPublisher"></result>
+        <result column="publication_date" property="publicationDate"></result>
+        <result column="book_description" property="bookDescription"></result>
+        <result column="book_stock" property="bookStock"></result>
+        <result column="new_book" property="newBook"></result>
+    </resultMap>
+
+    <resultMap id="bookImgMap" type="com.project.greenbook.dto.BookImgDTO">
+        <result column="book_id" property="bookId"></result>
+        <result column="origin_file_name" property="originFileName"></result>
+        <result column="stored_file_name" property="storedFileName"></result>
+        <result column="stored_thumbnail" property="storedThumbnail"></result>
+        <result column="file_size" property="fileSize"></result>
+    </resultMap>
+    <!-- Mapping End -->
+
+    <!-- @@@@@@@@@@@@ list start -->
+    <select id="bookInfoList" resultMap="bookInfoMap" parameterType="hashMap">
+        SELECT book_id, book_title, large_category, small_category, book_price, book_author, book_publisher
+        , publication_date, book_description, book_stock, new_book FROM book_info
+        WHERE ${searchOption} like '%${searchText}%'
+        <if test="member_class == 1">
+            AND new_book = 0
+            AND book_id in (SELECT book_id FROM book_used WHERE member_id = #{member_id})
+        </if>
+        <if test="member_class == 2">
+            AND new_book = 1
+        </if>
+        ORDER BY book_id desc
+        limit ${start} , ${size};
+    </select>
+
+    <select id="bookImgList" resultMap="bookImgMap" parameterType="hashMap">
+        SELECT book_id, origin_file_name, stored_file_name, stored_thumbnail, file_size
+        FROM book_img
+        WHERE
+        <if test="searchOption == 'book_id'"> book_id like '%${searchText}%'</if>
+        <if test="searchOption == 'book_title'">
+            book_id =
+            (SELECT Book_id
+            FROM book_info
+            <!--            WHERE Book_title like #{searchText}-->
+            WHERE Book_title like '%${searchText}%'
+            )
+        </if>
+        <if test="member_class == 1">
+            AND book_id in (SELECT book_id FROM book_used WHERE member_id = #{member_id})
+        </if>
+        <if test="member_class == 2">
+            AND book_id in (SELECT book_id FROM book_info where new_book = 1)
+        </if>
+        ORDER BY book_id desc
+        limit ${start} , ${size};
+    </select>
+
+    <select id="bookRefundList" resultType="com.project.greenbook.dto.Refund" parameterType="String">
+        SELECT refund_number, book_order_number, book_stock, refund_reason, refund_img, member_id
+        FROM book_order_refund
+        where book_order_number = (select book_order_number from book_info where book_id = ${bookId});
+    </select>
+
+    <select id="bookOrderRefund">
+        SELECT refund_number, book_order_number, book_stock, refund_reason, refund_img, member_id
+        WHERE book_order_number IN
+        (SELECT book_order_number  from book_order where book_id in
+        <if test="member_class == 1"><!-- 사용자 -->
+            (SELECT book_id from book_used where member_id = #{member_id})
+        </if>
+        <if test="member_class == 2"><!-- 관리자 -->
+            (select book_id from book_info bi where new_book = 1)
+        </if>
+        )
+        ;
+    </select>
+    <!-- @@@@@@@@@@@ list End -->
+
+
+    <!-- ######################## select start -->
+    <select id="contentInfo" parameterType="String" resultMap="bookInfoMap">
+        SELECT book_id, book_title, large_category, small_category, book_price, book_author, book_publisher
+        , publication_date, book_description, book_stock, new_book
+        FROM book_info
+        WHERE book_id = ${bookId};
+    </select>
+
+    <select id="contentImg" parameterType="String" resultMap="bookImgMap">
+        SELECT book_id, origin_file_name, stored_file_name, stored_thumbnail, file_size
+        FROM book_img
+        WHERE book_id = #{bookId}
+    </select>
+
+    <select id="getMaxId" resultType="int" parameterType="hashmap">
+        SELECT MAX(book_id) FROM book_info;
+    </select>
+
+    <select id="countBookInfo" resultType="int">
+        SELECT COUNT(book_id) FROM book_info
+        <if test="searchOption == 'book_id'">WHERE book_id like '%${searchText}%'</if>
+        <if test="searchOption == 'book_title'">
+            WHERE
+            book_id in
+            (SELECT Book_id
+            FROM book_info
+            <!--            WHERE Book_title like #{searchText}-->
+            WHERE Book_title like '%${searchText}%'
+            )
+        </if>
+        <if test="member_class == 1"><!-- 사용자 -->
+            AND new_book = 0
+        </if>
+        <if test="member_class == 2"><!-- 관리자 -->
+            AND new_book = 1
+        </if>
+    </select>
+
+    <select id="sellingCount" parameterType="hashmap" resultType="String">
+        SELECT COUNT(book_id) FROM book_info
+        WHERE
+        <if test="member_class == 1">
+            book_id in (SELECT book_id FROM book_used WHERE member_id = #{member_id}) AND
+        </if>
+        <if test="member_class == 2">
+            new_book = 1 AND
+        </if>
+        book_stock != 0
+    </select>
+
+    <select id="stockOutCount" parameterType="hashmap" resultType="String">
+        SELECT COUNT(book_id) FROM book_info
+        WHERE
+        <if test="member_class == 1">
+            book_id in (SELECT book_id FROM book_used WHERE member_id = #{member_id}) AND
+        </if>
+        <if test="member_class == 2">
+            new_book = 1 AND
+        </if>
+        book_stock = 0
+    </select>
+
+    <select id="refundCount" parameterType="hashmap" resultType="String">
+        SELECT COUNT(refund_number) FROM book_order_refund
+        WHERE
+        <if test="member_class == 1">
+            book_order_number in (SELECT book_order_number FROM book_order
+            WHERE book_id in (SELECT book_id FROM book_used
+            WHERE member_id = #{member_id})) AND
+        </if>
+        <if test="member_class == 2">
+            book_order_number in (SELECT book_order_number FROM book_order
+            WHERE book_id in (SELECT book_id FROM book_info
+            WHERE new_book = 1)) AND
+        </if>
+        book_stock = 0
+    </select>
+    <select id="getMaxRefundNumber">
+        SELECT MAX(refund_number) FROM book_order_refund;
+    </select>
+    <!-- ######################## select end -->
+
+    <!-- @@@@@@@@@@ insert Start-->
+    <insert id="register" parameterType="hashmap">
+        INSERT INTO book_info(book_title, large_category , small_category , book_price , book_author
+        , book_publisher , publication_date , book_description , book_stock , new_book
+        ) VALUES( #{bookTitle} , #{largeCategory} , #{smallCategory} , #{bookPrice} , #{bookAuthor}
+        , #{bookPublisher} , #{publicationDate} , #{bookDescription} , 0 ,${new_book}
+        )
+    </insert>
+
+    <insert id="registerUsed">
+        INSERT INTO book_used(book_id, book_status, member_id)
+        VALUES(#{bookId},#{bookStatus},#{member_id})
+    </insert>
+
+    <insert id="registerImg" parameterType="hashmap">
+        INSERT INTO book_img(book_id,origin_file_name, stored_file_name, stored_thumbnail,file_size)
+        VALUES( #{bookId}, #{originFileName}, #{storedFileName}, #{storedThumbnail}, #{fileSize});
+    </insert>
+
+    <insert id="refund">
+        INSERT INTO green.book_order_refund
+        (refund_number, book_order_number, book_stock, refund_reason, refund_img, member_id)
+        VALUES(#{refund_number}, #{book_order_number}, #{book_stock}, #{refund_reason}, #{refund_img}, #{member_id});
+    </insert>
+    <!-- @@@@@@@@@@ insert End-->
+
+
+    <!-- #####################update Start-->
+    <update id="receiving" parameterType="hashmap">
+        UPDATE book_info SET book_stock = book_stock + #{bookStock} WHERE book_id = #{bookId}
+    </update>
+
+    <update id="updateInfo" parameterType="hashmap">
+        UPDATE book_info SET book_title = #{bookTitle}, large_category = #{largeCategory}
+        , small_category = #{smallCategory} , book_price = #{bookPrice}, book_author = #{bookAuthor}, book_publisher = #{bookPublisher}
+        , publication_date = #{publicationDate}, book_description = #{bookDescription} WHERE book_id = ${bookId};
+    </update>
+
+    <update id="updateImg" parameterType="hashmap">
+        UPDATE book_img SET origin_file_name = #{originFileName}, stored_file_name = #{storedFileName}
+        , stored_thumbnail = #{storedThumbnail} , file_size = #{fileSize} WHERE book_id = ${bookId};
+    </update>
+    <!-- ##################### update End-->
+
+
+    <!-- @@@@@@@@ delete start -->
+    <delete id="deleteImg" parameterType="hashmap">
+        DELETE FROM book_img WHERE book_id = #{bookId};
+    </delete>
+
+    <delete id="deleteInfo" parameterType="hashmap">
+        DELETE FROM book_info WHERE book_id = #{bookId}
+    </delete>
+
+
+    <select id="selectBook" resultType="com.project.greenbook.dto.BookDTO">
+        SELECT
+        book_id,book_price,book_title,book_author,book_publisher
+        ,book_description
+        FROM book_info WHERE book_id=${book_id}
+    </select>
+</mapper>

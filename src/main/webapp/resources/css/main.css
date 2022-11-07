@@ -1,0 +1,119 @@
+body {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.line {
+    border-bottom: 1px solid #d9d9d9;
+    margin-bottom: 30px;
+}
+
+main {
+    height: 1200px;
+    margin: 0 auto;
+}
+main .content {
+    margin-top: 30px;
+    text-align: center;
+}
+main .content .title {
+    padding-left: 0;
+}
+.content table .content_tb {
+    width: 1200px;
+}
+.content table .content_tb_top td{
+    background-color: #cae0f0;
+}
+
+main .content .oder_button_top {
+    margin-bottom: 30px;
+    margin-left: 70px;
+}
+
+main .content .oder_button_bt {
+    margin-top: 30px;
+    margin-left: 70px;
+}
+main .content .oder_bt{
+    width: 80px;
+}
+.content .title {
+    text-align: left;
+    padding-left: 70px;
+    margin-bottom: 30px;
+}
+
+.Information {
+    margin-top: 50px;
+}
+
+.Info_table {
+    margin-left:auto;
+    margin-right:auto;
+    background-color: #cae0f0;
+}
+
+.Info_table .Info_td1 td {
+    width: 200px;
+    height: 70px;
+}
+
+.Info_table .Info_td1 td p {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.Info_table .Info_td2 td {
+    height: 200px;
+} 
+
+.Info_table .Info_td2 td p {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.payment_event {
+    margin-top: 50px;
+}
+
+.payment_event table {
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.payment_event table tr td {
+    text-align: center;
+}
+
+.all_check_lb:hover {
+    cursor: pointer;
+}
+
+.btn-outline-success1:hover {
+    color: white;
+    /*background-color: #dc3545;*/
+    background-color: #1969b3;
+    border-color: black;
+}
+
+.btn-outline-success1 {
+    color: black;
+    /*background-color: #196ab3;*/
+    background-color: #cae0f0;
+    border-radius: 5px;
+    width: 115px;
+}
+
+.user_type {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+.user_type label:hover {
+    cursor: pointer;
+}
+
+footer {
+    margin-top: 150px;
+}

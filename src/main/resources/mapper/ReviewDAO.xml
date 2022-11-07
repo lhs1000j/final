@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace에는 DAO가 있는 위치를 지정한다. -->
+<mapper namespace="com.project.greenbook.dao.ReviewDAO">
+    <!-- id에는 메서드 명을 넣는다. -->
+    <select id="review" resultType="com.project.greenbook.dto.ReviewDTO">
+        SELECT * FROM book_review where book_id = #{book_id}
+    </select>
+
+    <!-- parameterType에 hashmap이라고 지정한다. 이후에 변수에는 #{param1}과 같은 형식이 아닌 변수 명을 적는다. -->
+    <insert id="review_write" parameterType="hashmap">
+        INSERT INTO book_review (book_id, member_id, review_text, review_score, review_date) VALUES
+        (${bookId}, #{userId}, #{review_text}, #{review_score}, now())
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM book_review WHERE member_id = #{userId} and book_id = #{bookId}
+    </delete>
+
+    <select id="review_sum" resultType="integer">
+        select ifnull (sum(review_score), 0) from book_review where book_id =#{bookId};
+    </select>
+
+    <select id="review_count" resultType="int">
+        select count(*) from book_review where book_id = #{bookId};
+    </select>
+
+    <resultMap id="imgMap" type="com.project.greenbook.dto.BookImgDTO">
+        <result column="book_id" property="bookId"></result>
+        <result column="origin_file_name" property="originFileName"></result>
+        <result column="stored_file_name" property="storedFileName"></result>
+        <result column="stored_thumbnail" property="storedThumbnail"></result>
+        <result column="file_size" property="fileSize"></result>
+    </resultMap>
+
+    <select id="bookDetail" parameterType="String" resultType="com.project.greenbook.dto.BookDTO">
+        SELECT book_id, book_title, large_category, small_category, book_price, book_author, book_publisher
+        , publication_date, book_description, book_stock, new_book
+        FROM book_info
+        WHERE book_id = ${bookId};
+    </select>
+
+    <select id="bookImg" parameterType="String" resultMap="imgMap">
+        SELECT book_id, origin_file_name, stored_file_name, stored_thumbnail, file_size
+        FROM book_img
+        WHERE book_id = #{bookId}
+    </select>
+</mapper>

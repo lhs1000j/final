@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace에는 DAO가 있는 위치를 지정한다. -->
+<mapper namespace="com.project.greenbook.dao.MemberDAO">
+    <!-- id에는 메서드 명을 넣는다. -->
+    <select id="loginCheck" parameterType="hashmap" resultType="com.project.greenbook.dto.MemberDTO">
+        SELECT *
+        FROM member
+        WHERE member_id = #{member_id}
+    </select>
+
+    <insert id="signUp" parameterType="hashmap">
+        INSERT INTO member
+        (member_id, member_pwd, member_name, member_phone, member_email, member_postcode, member_address, member_extraAddress, member_detailAddress)
+        VALUES
+        (#{member_id}, #{member_pwd}, #{member_name}, #{member_phone}, #{member_email}, #{member_postcode}, #{member_address}, #{member_extraAddress}, #{member_detailAddress})
+    </insert>
+
+    <select id="signIn" parameterType="hashmap" resultType="com.project.greenbook.dto.MemberDTO">
+        SELECT *
+        FROM member
+        WHERE member_id = #{member_id}
+        AND member_pwd = #{member_pwd}
+    </select>
+
+    <!--아이디 중복 검사 -->
+    <select id="overlay" parameterType="String" resultType="Integer">
+        SELECT COUNT(*)
+        FROM member
+        WHERE member_id = #{member_id}
+    </select>
+
+    <!--이메일 중복 검사 -->
+    <select id="emoverlay" parameterType="String" resultType="Integer">
+        SELECT COUNT(*)
+        FROM member
+        WHERE member_email = #{member_email}
+    </select>
+
+
+    <update id="memberModify" parameterType="hashmap">
+        UPDATE member
+        SET
+        member_pwd = #{member_pwd}, member_name = #{member_name}, member_phone = #{member_phone}, member_email = #{member_email}, member_postcode = #{member_postcode}, member_address = #{member_address}, member_extraAddress = #{member_extraAddress}, member_detailAddress = #{member_detailAddress}
+        where member_id = #{member_id}
+    </update>
+
+    <delete id="withdrawal" parameterType="hashmap">
+        DELETE FROM member
+        WHERE member_id = #{member_id}
+    </delete>
+
+</mapper>

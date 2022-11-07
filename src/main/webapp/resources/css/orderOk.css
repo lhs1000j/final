@@ -1,0 +1,28 @@
+.content {
+    max-width: 1200px;
+    margin: 0 auto;
+    border: 1px solid #d9d9d9;
+    height: 700px;
+}
+.content h4 {
+    width: 100%;
+    text-align: center;
+    font-size: 32px;
+}
+.content .product{
+    float: left;
+    margin-left: 150px;
+    padding-top: 150px;
+}
+.content .address{
+    float: right;
+    margin-right: 150px;
+    padding-top: 150px;
+}
+
+.content .title_name {
+    padding-top: 30px;
+    border-bottom: 1px solid #d9d9d9;
+    padding-bottom: 30px;
+    background-color: #2aab1d;
+}
